@@ -1,0 +1,62 @@
+{
+  "profile_name": "Characterization",
+  "description": "Extended characterization test suite with frequency sweeps",
+  "version": "1.0",
+  "uart_baud_rate": 921600,
+  "test_sequence": [
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 60.0,
+      "limits": { "lower": 9.0, "upper": 14.0, "unit": "dBm" }
+    },
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 61.0,
+      "limits": { "lower": 9.0, "upper": 14.0, "unit": "dBm" }
+    },
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 9.0, "upper": 14.0, "unit": "dBm" }
+    },
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 63.0,
+      "limits": { "lower": 9.0, "upper": 14.0, "unit": "dBm" }
+    },
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 64.0,
+      "limits": { "lower": 9.0, "upper": 14.0, "unit": "dBm" }
+    },
+    {
+      "name": "phase_noise",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -130.0, "upper": -75.0, "unit": "dBc/Hz" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 0,
+      "frequency_ghz": 60.0,
+      "limits": { "lower": 3.0, "upper": 18.0, "unit": "dB" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 3.0, "upper": 18.0, "unit": "dB" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 0,
+      "frequency_ghz": 64.0,
+      "limits": { "lower": 3.0, "upper": 18.0, "unit": "dB" }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "instrument_type": "Signal Generator",
+  "models": {
+    "RS_SMW200A": {
+      "visa_address": "TCPIP::192.168.1.101::INSTR",
+      "frequency_range": { "min_hz": 100e3, "max_hz": 44e9 },
+      "power_range": { "min_dbm": -130, "max_dbm": 25 },
+      "default_settings": {
+        "frequency_hz": 77000000000,
+        "power_dbm": -10,
+        "modulation": "CW",
+        "rf_output": false
+      },
+      "measurement_configs": {
+        "rx_sensitivity": {
+          "power_dbm": -60,
+          "modulation": "CW"
+        },
+        "noise_figure": {
+          "mode": "noise_source",
+          "enr_db": 15.0
+        },
+        "evm_reference": {
+          "modulation": "CW",
+          "power_dbm": -10
+        }
+      }
+    }
+  },
+  "noise_source": {
+    "model": "Keysight_346C",
+    "enr_table": {
+      "60_ghz": 14.8,
+      "62_ghz": 15.0,
+      "64_ghz": 15.2,
+      "77_ghz": 14.5,
+      "79_ghz": 14.7,
+      "81_ghz": 14.9
+    }
+  }
+}

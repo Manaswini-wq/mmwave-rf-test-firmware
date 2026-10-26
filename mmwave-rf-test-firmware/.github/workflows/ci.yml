@@ -1,0 +1,138 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop, "feature/**"]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  ARM_GCC_VERSION: "10.3-2021.10"
+
+jobs:
+  build:
+    name: Build Firmware
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ARM GCC Toolchain
+        run: |
+          wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/${{ env.ARM_GCC_VERSION }}/gcc-arm-none-eabi-${{ env.ARM_GCC_VERSION }}-x86_64-linux.tar.bz2
+          tar xjf gcc-arm-none-eabi-*.tar.bz2
+          echo "$PWD/gcc-arm-none-eabi-${{ env.ARM_GCC_VERSION }}/bin" >> $GITHUB_PATH
+
+      - name: Build firmware (Make)
+        run: make all
+
+      - name: Print firmware size
+        run: make size
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-binary
+          path: |
+            build/bin/*.elf
+            build/bin/*.bin
+            build/bin/*.map
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and run unit tests
+        run: |
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              -Iinclude -Isrc \
+              -o build/test_runner \
+              tests/unit/test_tx_power_cal.c \
+              tests/unit/test_rx_gain_cal.c \
+              tests/unit/test_lo_nulling.c \
+              tests/unit/test_capture_engine.c \
+              -lm
+          ./build/test_runner
+
+      - name: Build integration tests
+        run: |
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              -Iinclude -Isrc \
+              -o build/test_integration \
+              tests/integration/test_full_rf_chain.c \
+              tests/integration/test_production_sequence.c \
+              -lm
+          ./build/test_integration
+
+      - name: Build qualification tests
+        run: |
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              -Iinclude -Isrc \
+              -o build/test_qual \
+              tests/qualification/test_rf_spec_compliance.c \
+              -lm
+          ./build/test_qual
+
+  lint:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: sudo apt-get install -y cppcheck
+
+      - name: Run cppcheck
+        run: |
+          cppcheck --enable=warning,style,performance \
+                   --suppress=missingInclude \
+                   --inline-suppr \
+                   --error-exitcode=1 \
+                   -Iinclude -Isrc \
+                   src/
+
+  python-lint:
+    name: Python Lint & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/python/requirements.txt
+          pip install flake8 mypy
+
+      - name: Run flake8
+        run: flake8 scripts/python/ --max-line-length=100 --ignore=E501,W503
+
+      - name: Run mypy (type checking)
+        run: mypy scripts/python/ --ignore-missing-imports || true
+
+  cmake-build:
+    name: CMake Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: CMake host test build
+        run: |
+          mkdir -p build-cmake
+          cd build-cmake
+          cmake -DBUILD_TESTS=ON ..
+          cmake --build .
+
+      - name: Run CMake tests
+        run: |
+          cd build-cmake
+          ctest --output-on-failure

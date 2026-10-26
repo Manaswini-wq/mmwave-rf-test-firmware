@@ -1,0 +1,116 @@
+name: Nightly Regression
+
+on:
+  schedule:
+    - cron: "0 2 * * *"  # 2 AM UTC daily
+  workflow_dispatch:      # Manual trigger
+
+env:
+  ARM_GCC_VERSION: "10.3-2021.10"
+
+jobs:
+  full-regression:
+    name: Full Regression Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ARM GCC Toolchain
+        run: |
+          wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/${{ env.ARM_GCC_VERSION }}/gcc-arm-none-eabi-${{ env.ARM_GCC_VERSION }}-x86_64-linux.tar.bz2
+          tar xjf gcc-arm-none-eabi-*.tar.bz2
+          echo "$PWD/gcc-arm-none-eabi-${{ env.ARM_GCC_VERSION }}/bin" >> $GITHUB_PATH
+
+      - name: Build firmware (all configurations)
+        run: |
+          echo "=== Debug build ==="
+          make clean
+          CFLAGS="-O0 -g3" make all
+
+          echo "=== Release build ==="
+          make clean
+          CFLAGS="-O2 -g" make all
+
+          echo "=== Size-optimized build ==="
+          make clean
+          CFLAGS="-Os -g" make all
+
+      - name: Run unit tests with coverage
+        run: |
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              --coverage \
+              -Iinclude -Isrc \
+              -o build/test_runner_cov \
+              tests/unit/test_tx_power_cal.c \
+              tests/unit/test_rx_gain_cal.c \
+              tests/unit/test_lo_nulling.c \
+              tests/unit/test_capture_engine.c \
+              -lm
+          ./build/test_runner_cov
+
+      - name: Run integration tests
+        run: |
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              -Iinclude -Isrc \
+              -o build/test_integration \
+              tests/integration/test_full_rf_chain.c \
+              -lm
+          ./build/test_integration
+
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              -Iinclude -Isrc \
+              -o build/test_prod_seq \
+              tests/integration/test_production_sequence.c \
+              -lm
+          ./build/test_prod_seq
+
+      - name: Run qualification tests
+        run: |
+          gcc -DUNIT_TEST -DHOST_BUILD \
+              -Iinclude -Isrc \
+              -o build/test_qual \
+              tests/qualification/test_rf_spec_compliance.c \
+              -lm
+          ./build/test_qual
+
+      - name: Python script validation
+        run: |
+          pip install -r scripts/python/requirements.txt
+          python -c "from scripts.python.data_analyzer import RFDataAnalyzer; print('Analyzer OK')"
+          python -c "from scripts.python.report_generator import ReportGenerator; print('Reporter OK')"
+
+      - name: Static analysis (full)
+        run: |
+          sudo apt-get install -y cppcheck
+          cppcheck --enable=all \
+                   --suppress=missingInclude \
+                   --suppress=unusedFunction \
+                   --xml --xml-version=2 \
+                   -Iinclude -Isrc \
+                   src/ 2> build/cppcheck_report.xml || true
+
+      - name: Binary size tracking
+        run: |
+          make clean && make all
+          arm-none-eabi-size -A build/bin/mmwave_rf_test.elf > build/size_report.txt
+          cat build/size_report.txt
+
+      - name: Upload regression artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-regression-${{ github.run_number }}
+          path: |
+            build/bin/*.elf
+            build/bin/*.bin
+            build/bin/*.map
+            build/size_report.txt
+            build/cppcheck_report.xml
+          retention-days: 30
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Nightly regression FAILED - check logs for details"

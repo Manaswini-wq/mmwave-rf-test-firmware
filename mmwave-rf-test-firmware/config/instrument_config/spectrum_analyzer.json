@@ -1,0 +1,50 @@
+{
+  "instrument_type": "Spectrum Analyzer",
+  "models": {
+    "Keysight_N9041B": {
+      "visa_address": "TCPIP::192.168.1.100::INSTR",
+      "frequency_range": { "min_hz": 2e6, "max_hz": 110e9 },
+      "default_settings": {
+        "rbw_hz": 10000,
+        "vbw_hz": 10000,
+        "span_hz": 10000000,
+        "ref_level_dbm": 0,
+        "attenuation_db": 10,
+        "detector": "RMS",
+        "average_count": 10,
+        "sweep_points": 1001
+      },
+      "measurement_configs": {
+        "tx_power": {
+          "span_hz": 1000000,
+          "rbw_hz": 100000,
+          "ref_level_dbm": 20,
+          "detector": "RMS",
+          "average_count": 10
+        },
+        "phase_noise": {
+          "span_hz": 20000000,
+          "rbw_hz": 1000,
+          "ref_level_dbm": 0,
+          "detector": "SAMPLE",
+          "average_count": 20
+        },
+        "spurious": {
+          "span_hz": 100000000,
+          "rbw_hz": 10000,
+          "ref_level_dbm": 0,
+          "detector": "PEAK",
+          "average_count": 5
+        }
+      }
+    }
+  },
+  "cable_loss_db": {
+    "60_ghz": 3.5,
+    "62_ghz": 3.7,
+    "64_ghz": 4.0,
+    "77_ghz": 5.0,
+    "79_ghz": 5.2,
+    "81_ghz": 5.5
+  }
+}

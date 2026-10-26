@@ -1,0 +1,57 @@
+# Build artifacts
+build/
+out/
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.axf
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+*.egg
+.venv/
+venv/
+env/
+
+# Test output
+output/
+reports/
+*.log
+test_results/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# JTAG/Debug
+*.jlink
+*.cfg
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# Coverage
+coverage/
+*.gcno
+*.gcda
+*.gcov
+htmlcov/
+.coverage

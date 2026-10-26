@@ -1,0 +1,26 @@
+{
+  "profile_name": "Evaluation",
+  "description": "Quick evaluation test for RF performance verification",
+  "version": "1.0",
+  "uart_baud_rate": 921600,
+  "test_sequence": [
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 8.0, "upper": 15.0, "unit": "dBm" }
+    },
+    {
+      "name": "rx_noise",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -125.0, "upper": -95.0, "unit": "dBm" }
+    },
+    {
+      "name": "freq_acc",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -100.0, "upper": 100.0, "unit": "kHz" }
+    }
+  ]
+}

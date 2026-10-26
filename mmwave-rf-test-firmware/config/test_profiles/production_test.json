@@ -1,0 +1,102 @@
+{
+  "profile_name": "Production Test",
+  "description": "Standard production test sequence for IWR6843",
+  "version": "1.0",
+  "uart_baud_rate": 921600,
+  "test_sequence": [
+    {
+      "name": "tx_power",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 10.0, "upper": 13.0, "unit": "dBm" }
+    },
+    {
+      "name": "tx_power",
+      "channel": 1,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 10.0, "upper": 13.0, "unit": "dBm" }
+    },
+    {
+      "name": "tx_power",
+      "channel": 2,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 10.0, "upper": 13.0, "unit": "dBm" }
+    },
+    {
+      "name": "rx_noise",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -120.0, "upper": -100.0, "unit": "dBm" }
+    },
+    {
+      "name": "rx_noise",
+      "channel": 1,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -120.0, "upper": -100.0, "unit": "dBm" }
+    },
+    {
+      "name": "rx_noise",
+      "channel": 2,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -120.0, "upper": -100.0, "unit": "dBm" }
+    },
+    {
+      "name": "rx_noise",
+      "channel": 3,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -120.0, "upper": -100.0, "unit": "dBm" }
+    },
+    {
+      "name": "phase_noise",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -120.0, "upper": -85.0, "unit": "dBc/Hz" }
+    },
+    {
+      "name": "freq_acc",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -50.0, "upper": 50.0, "unit": "kHz" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 5.0, "upper": 14.0, "unit": "dB" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 1,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 5.0, "upper": 14.0, "unit": "dB" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 2,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 5.0, "upper": 14.0, "unit": "dB" }
+    },
+    {
+      "name": "noise_fig",
+      "channel": 3,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": 5.0, "upper": 14.0, "unit": "dB" }
+    },
+    {
+      "name": "tx_evm",
+      "channel": 0,
+      "frequency_ghz": 62.0,
+      "limits": { "lower": -50.0, "upper": -25.0, "unit": "dB" }
+    }
+  ],
+  "instruments": {
+    "spectrum_analyzer": {
+      "visa_address": "TCPIP::192.168.1.100::INSTR",
+      "type": "Keysight_N9041B"
+    },
+    "signal_generator": {
+      "visa_address": "TCPIP::192.168.1.101::INSTR",
+      "type": "RS_SMW200A"
+    }
+  }
+}
